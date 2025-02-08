@@ -83,7 +83,7 @@ export default function ChartSection({
             fillOpacity={1}
             shape={(props) => {
               const { x, y, width, height, payload } = props;
-              const barColor = payload.charging ? "#16a34a" : "#ea580c"; 
+              const barColor = payload.charging ? "#80ef80" : "#ffb27f"; 
               // green if charging, orange if not
               return <rect x={x} y={y} width={width} height={height} fill={barColor} />;
             }}
