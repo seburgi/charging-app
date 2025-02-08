@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
 import ChartSection from "./ChartSection";
 
+/**
+ * Main application component. Holds state for user inputs, fetches market data,
+ * and renders the sidebar plus the ChartSection.
+ */
 export default function App() {
   // -- State for user inputs --
-  const [currentCharge, setCurrentCharge] = useState(10); // in %
-  const [willingToPay, setWillingToPay] = useState(10); // in Euro cents/kWh
-  const [networkCosts, setNetworkCosts] = useState(11); // in Euro cents/kWh
+  // Note: In TypeScript, you could add explicit types, e.g. useState<number>.
+  const [currentCharge, setCurrentCharge] = useState(10);    // in %
+  const [willingToPay, setWillingToPay] = useState(10);      // in Euro cents/kWh
+  const [networkCosts, setNetworkCosts] = useState(11);      // in Euro cents/kWh
 
   // We’ll calculate timestamps around "now"
   const now = Date.now();
@@ -16,7 +21,12 @@ export default function App() {
   const endTimestamp = now + 36 * 60 * 60 * 1000;
 
   // -- State for day-ahead market data (hourly) --
-  const [marketData, setMarketData] = useState([]);
+  interface MarketItem {
+    start: number;
+    end: number;
+    marketPriceCents: number;
+  }
+  const [marketData, setMarketData] = useState<MarketItem[]>([]);
 
   useEffect(() => {
     // We'll fetch data from awattar (Austria) as an example
@@ -25,15 +35,14 @@ export default function App() {
         const url = `https://api.awattar.at/v1/marketdata?start=${startTimestamp}&end=${endTimestamp}`;
         const res = await fetch(url);
         const json = await res.json();
-        // "data" is an array of objects with start_timestamp, end_timestamp, marketprice (EUR/MWh), etc.
+
+        // "data" is an array of objects: { start_timestamp, end_timestamp, marketprice (EUR/MWh), ... }
         const rawData = json.data || [];
 
         // Convert EUR/MWh --> Euro cents/kWh
         //   1 MWh = 1000 kWh
-        //   Price in EUR/MWh = price_in_EUR_MWh / 1000 = price_in_EUR_kWh
-        //   Then to Euro cents/kWh = price_in_EUR_kWh * 100
-        // => effectively, price_in_EUR_MWh * 0.1 = Euro cents/kWh
-        const processedData = rawData.map((item) => {
+        //   Price in EUR/MWh => (price_in_EUR_MWh * 0.1) = Euro cents/kWh
+        const processedData: MarketItem[] = rawData.map((item: any) => {
           const priceInCents = item.marketprice * 0.1; // from EUR/MWh to Euro cents/kWh
           return {
             start: item.start_timestamp,
@@ -53,8 +62,7 @@ export default function App() {
 
   // This function determines whether we’ll charge in a given hour
   // based on total cost (market price + network costs) vs. willingToPay.
-  // We’ll do more advanced logic for partial charging later.
-  const shouldCharge = (marketPriceCents) => {
+  const shouldCharge = (marketPriceCents: number) => {
     const totalCost = marketPriceCents + Number(networkCosts);
     return totalCost <= Number(willingToPay);
   };
@@ -76,7 +84,7 @@ export default function App() {
             placeholder="e.g., 30"
             className="w-full border rounded p-2"
             value={currentCharge}
-            onChange={(e) => setCurrentCharge(e.target.value)}
+            onChange={(e) => setCurrentCharge(Number(e.target.value))}
           />
         </div>
 
@@ -90,7 +98,7 @@ export default function App() {
             placeholder="e.g., 30"
             className="w-full border rounded p-2"
             value={willingToPay}
-            onChange={(e) => setWillingToPay(e.target.value)}
+            onChange={(e) => setWillingToPay(Number(e.target.value))}
           />
         </div>
 
@@ -104,7 +112,7 @@ export default function App() {
             placeholder="e.g., 10"
             className="w-full border rounded p-2"
             value={networkCosts}
-            onChange={(e) => setNetworkCosts(e.target.value)}
+            onChange={(e) => setNetworkCosts(Number(e.target.value))}
           />
         </div>
       </div>
@@ -120,7 +128,6 @@ export default function App() {
           shouldCharge={shouldCharge}
         />
       </div>
-
     </div>
   );
 }
