@@ -3,17 +3,20 @@ import ChartSection from "./ChartSection";
 
 export default function App() {
   // -- State for user inputs --
-  const [currentCharge, setCurrentCharge] = useState(30); // in %
-  const [willingToPay, setWillingToPay] = useState(30); // in Euro cents/kWh
-  const [networkCosts, setNetworkCosts] = useState(10); // in Euro cents/kWh
+  const [currentCharge, setCurrentCharge] = useState(10); // in %
+  const [willingToPay, setWillingToPay] = useState(10); // in Euro cents/kWh
+  const [networkCosts, setNetworkCosts] = useState(11); // in Euro cents/kWh
+
+  // We’ll calculate timestamps around "now"
+  const now = Date.now();
+
+  // Start: "now" minus 12 hours (in milliseconds)
+  const startTimestamp = now - 12 * 60 * 60 * 1000;
+  // End: "now" plus 36 hours
+  const endTimestamp = now + 36 * 60 * 60 * 1000;
 
   // -- State for day-ahead market data (hourly) --
   const [marketData, setMarketData] = useState([]);
-
-  // Example: We’ll pick a date/time range (these timestamps are placeholders).
-  // In practice, you might dynamically choose start/end times based on "today" or "tomorrow".
-  const startTimestamp = 1738969200000; // e.g. 2024-03-10 00:00 UTC, placeholder
-  const endTimestamp = 1739055600000;   // e.g. 2024-03-11 00:00 UTC, placeholder
 
   useEffect(() => {
     // We'll fetch data from awattar (Austria) as an example
