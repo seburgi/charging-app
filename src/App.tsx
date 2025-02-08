@@ -8,9 +8,9 @@ import ChartSection from "./ChartSection";
 export default function App() {
   // -- State for user inputs --
   // Note: In TypeScript, you could add explicit types, e.g. useState<number>.
-  const [currentCharge, setCurrentCharge] = useState(10);    // in %
-  const [willingToPay, setWillingToPay] = useState(10);      // in Euro cents/kWh
-  const [networkCosts, setNetworkCosts] = useState(11);      // in Euro cents/kWh
+  const [currentCharge, setCurrentCharge] = useState(20);    // in %
+  const [willingToPay, setWillingToPay] = useState(12);      // in Euro cents/kWh
+  const [networkCosts, setNetworkCosts] = useState(12);      // in Euro cents/kWh
 
   // We’ll calculate timestamps around "now"
   const now = Date.now();
