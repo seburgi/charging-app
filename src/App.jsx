@@ -60,11 +60,12 @@ export default function App() {
   };
 
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <div className="w-1/4 bg-white p-4 shadow-md">
+    <div className="flex flex-col md:flex-row min-h-screen">
+      
+      {/* Sidebar: full width on mobile, 1/4 width on md+ */}
+      <div className="w-full md:w-1/4 bg-white p-4 shadow-md">
         <h1 className="text-xl font-bold mb-4">EV Charging Setup</h1>
-        {/* Current Charge Level */}
+        
         <div className="mb-4">
           <label className="block mb-1" htmlFor="currentCharge">
             Current Charge Level (%)
@@ -79,10 +80,9 @@ export default function App() {
           />
         </div>
 
-        {/* Willing to Pay */}
         <div className="mb-4">
           <label className="block mb-1" htmlFor="willingToPay">
-            Willing to Pay (Euro cents/kWh)
+            Willing to Pay (c/kWh)
           </label>
           <input
             id="willingToPay"
@@ -94,10 +94,9 @@ export default function App() {
           />
         </div>
 
-        {/* Network Costs */}
         <div className="mb-4">
           <label className="block mb-1" htmlFor="networkCosts">
-            Network Costs (Euro cents/kWh)
+            Network Costs (c/kWh)
           </label>
           <input
             id="networkCosts"
@@ -110,12 +109,9 @@ export default function App() {
         </div>
       </div>
 
-      {/* Chart Area */}
+      {/* Chart Area: grows to fill remaining space */}
       <div className="flex-1 p-4">
-        <h2 className="text-lg font-semibold mb-4">
-          Cost Overview & Charging Plan
-        </h2>
-
+        <h2 className="text-lg font-semibold mb-4">Cost Overview & Charging Plan</h2>
         <ChartSection
           marketData={marketData}
           networkCosts={networkCosts}
@@ -124,6 +120,7 @@ export default function App() {
           shouldCharge={shouldCharge}
         />
       </div>
+
     </div>
   );
 }

@@ -34,25 +34,32 @@ export default function ChartSection({
     const pricePerKwh = item.marketPriceCents; 
     const totalCost = pricePerKwh + Number(networkCosts);
 
-    // Is this hour in the past or future?
-    const isPast = item.start < now;
-
-    // Default: no charging or SoC for past hours
-    let newBatteryLevel = batteryLevel;
-    let charging = false;
-    let batterySoC = null;
-
-    if (!isPast) {
-      charging = shouldCharge(pricePerKwh);
-      if (charging) {
-        const spaceLeft = MAX_BATTERY_CAPACITY - batteryLevel;
-        const canCharge = Math.min(spaceLeft, CHARGING_RATE_KWH_PER_HOUR);
-        newBatteryLevel += canCharge;
-      }
-      batterySoC = (newBatteryLevel / MAX_BATTERY_CAPACITY) * 100;
+    let isCurrentHour = item.start <= now && now < item.end;
+    let minutesOfHourRemaining = 60.0;
+    if(isCurrentHour) {
+      minutesOfHourRemaining = (item.end - now) / 1000.0 / 60.0;
     }
 
-    batteryLevel = newBatteryLevel;
+    // Should I consider this hour as past?
+    let d = new Date(item.start).setMinutes(date.getMinutes() + 30);
+    const isPast = d < now;
+
+    // Default: no charging or SoC for past hours
+    // let newBatteryLevel = batteryLevel;
+    let charging = false;
+    let batterySoC = (batteryLevel / MAX_BATTERY_CAPACITY) * 100;
+
+    if (!isPast) {
+      const spaceLeft = MAX_BATTERY_CAPACITY - batteryLevel;
+      const canCharge = Math.min(spaceLeft, CHARGING_RATE_KWH_PER_HOUR / 60.0 * minutesOfHourRemaining);
+
+      charging = shouldCharge(pricePerKwh) && canCharge > 0;
+      if (charging) {
+        batteryLevel += canCharge;
+      }
+    }
+
+    // batteryLevel = newBatteryLevel;
 
     // Bar color logic
     let barColor = "#ccc"; // gray for past
@@ -115,10 +122,19 @@ export default function ChartSection({
             }}
           />
 
-          <Tooltip />
+          <Tooltip
+            formatter={(value, name) => {
+              if (name === "State of Charge (%)") {
+                // Round to 2 decimals, add a "%"
+                return [`${parseFloat(value).toFixed(2)}%`, name];
+              } else {
+                // e.g. cost
+                return [`${parseFloat(value).toFixed(2)} cents/kWh`, name];
+              }
+            }}
+          />
           <Legend />
 
-          {/* BAR: We'll add <LabelList> for the "c" suffix. */}
           <Bar
             dataKey="totalCostCents"
             yAxisId="left"
