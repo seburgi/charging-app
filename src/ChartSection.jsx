@@ -9,10 +9,11 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  LabelList,
 } from "recharts";
 
 const MAX_BATTERY_CAPACITY = 75; // kWh
-const CHARGING_RATE_KWH_PER_HOUR = 11; // kW AC, for example
+const CHARGING_RATE_KWH_PER_HOUR = 11; // e.g., 11kW
 
 export default function ChartSection({
   marketData,
@@ -21,30 +22,26 @@ export default function ChartSection({
   currentCharge,
   shouldCharge,
 }) {
-  // The battery’s starting capacity in kWh based on currentCharge%
   let batteryLevel = (Number(currentCharge) / 100) * MAX_BATTERY_CAPACITY;
-
-  // For convenience, get the current time (in ms)
   const now = Date.now();
 
-  // Sort market data by timestamp if not already sorted
+  // Ensure data is sorted
   const sortedData = [...marketData].sort((a, b) => a.start - b.start);
 
   const chartData = sortedData.map((item) => {
     const date = new Date(item.start);
     const hourLabel = date.getHours().toString().padStart(2, "0") + ":00";
-
-    const pricePerKwh = item.marketPriceCents; // from your fetch
+    const pricePerKwh = item.marketPriceCents; 
     const totalCost = pricePerKwh + Number(networkCosts);
 
-    // Check if this hour is in the past
+    // Is this hour in the past or future?
     const isPast = item.start < now;
 
+    // Default: no charging or SoC for past hours
     let newBatteryLevel = batteryLevel;
     let charging = false;
-    let batterySoC = null; // We'll keep SoC null if it's in the past
+    let batterySoC = null;
 
-    // If it's future (or current hour), we apply charging logic
     if (!isPast) {
       charging = shouldCharge(pricePerKwh);
       if (charging) {
@@ -52,20 +49,15 @@ export default function ChartSection({
         const canCharge = Math.min(spaceLeft, CHARGING_RATE_KWH_PER_HOUR);
         newBatteryLevel += canCharge;
       }
-      // Convert batteryLevel to 0–100 for SoC
       batterySoC = (newBatteryLevel / MAX_BATTERY_CAPACITY) * 100;
     }
 
-    // Update batteryLevel for next iteration
     batteryLevel = newBatteryLevel;
 
     // Bar color logic
-    // - Gray for past
-    // - Green if charging (future)
-    // - Orange if not charging (future)
-    let barColor = "#ccc"; // default for past
+    let barColor = "#ccc"; // gray for past
     if (!isPast) {
-      barColor = charging ? "#80ef80" : "#ffb27f";
+      barColor = charging ? "#80ef80" : "#ffb27f"; // green if charging, orange if not
     }
 
     return {
@@ -77,6 +69,20 @@ export default function ChartSection({
     };
   });
 
+  // A custom shape to color each bar individually
+  const CustomBar = (props) => {
+    const { x, y, width, height, payload } = props;
+    return (
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        fill={payload.barColor}
+      />
+    );
+  };
+
   return (
     <div className="border border-gray-200 p-4 rounded h-[600px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -86,7 +92,7 @@ export default function ChartSection({
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="hour" />
-          
+
           {/* Y-axis for cost */}
           <YAxis
             yAxisId="left"
@@ -96,7 +102,7 @@ export default function ChartSection({
               position: "insideLeft",
             }}
           />
-          
+
           {/* Y-axis for SoC (%) */}
           <YAxis
             yAxisId="right"
@@ -112,27 +118,21 @@ export default function ChartSection({
           <Tooltip />
           <Legend />
 
-          {/* The Bar for cost, referencing "left" axis */}
+          {/* BAR: We'll add <LabelList> for the "c" suffix. */}
           <Bar
             dataKey="totalCostCents"
             yAxisId="left"
             name="Cost (cents/kWh)"
-            // Use a custom shape so we can color each bar individually
-            shape={(props) => {
-              const { x, y, width, height, payload } = props;
-              return (
-                <rect
-                  x={x}
-                  y={y}
-                  width={width}
-                  height={height}
-                  fill={payload.barColor}
-                />
-              );
-            }}
-          />
+            shape={<CustomBar />}
+          >
+            <LabelList
+                dataKey="totalCostCents"
+                position="top"
+                formatter={(value) => `${value.toFixed(2)}`}
+            />
+          </Bar>
 
-          {/* The Line for Battery SoC, referencing "right" axis */}
+          {/* LINE for SoC */}
           <Line
             dataKey="batterySoC"
             yAxisId="right"
