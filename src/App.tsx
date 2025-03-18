@@ -9,14 +9,14 @@ export default function App() {
   // -- State for user inputs --
   // Note: In TypeScript, you could add explicit types, e.g. useState<number>.
   const [currentCharge, setCurrentCharge] = useState(20);    // in %
-  const [willingToPay, setWillingToPay] = useState(12);      // in Euro cents/kWh
-  const [networkCosts, setNetworkCosts] = useState(12);      // in Euro cents/kWh
+  const [willingToPay, setWillingToPay] = useState(5);      // in Euro cents/kWh
+  const [networkCosts, setNetworkCosts] = useState(0);      // in Euro cents/kWh
 
   // We’ll calculate timestamps around "now"
   const now = Date.now();
 
   // Start: "now" minus 12 hours (in milliseconds)
-  const startTimestamp = now - 12 * 60 * 60 * 1000;
+  const startTimestamp = now - 5 * 60 * 60 * 1000;
   // End: "now" plus 36 hours
   const endTimestamp = now + 36 * 60 * 60 * 1000;
 
@@ -126,6 +126,7 @@ export default function App() {
           willingToPay={willingToPay}
           currentCharge={currentCharge}
           shouldCharge={shouldCharge}
+          onSetWillingToPay={(price) => setWillingToPay(price)}
         />
       </div>
     </div>
