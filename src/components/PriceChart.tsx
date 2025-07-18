@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import Card from './ui/Card';
 import {
   ComposedChart,
   Bar,
@@ -39,13 +40,14 @@ const CustomBar = (props: any) => {
 
 function PriceChart({ chartData, totalChargingCost, totalChargedKwh }: PriceChartProps) {
   return (
-    <div className="border border-gray-200 p-2 md:p-4 rounded h-[400px] md:h-[600px]">
+    <div className="space-y-6">
       <ChargingMetrics 
         totalChargingCost={totalChargingCost}
         totalChargedKwh={totalChargedKwh}
       />
 
-      <ResponsiveContainer width="100%" height="90%">
+      <Card variant="outlined" padding="md" className="h-[400px] md:h-[600px]">
+        <ResponsiveContainer width="100%" height="100%">
         <ComposedChart
           data={chartData}
           margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
@@ -112,7 +114,8 @@ function PriceChart({ chartData, totalChargingCost, totalChargedKwh }: PriceChar
             connectNulls={false}
           />
         </ComposedChart>
-      </ResponsiveContainer>
+        </ResponsiveContainer>
+      </Card>
     </div>
   );
 }

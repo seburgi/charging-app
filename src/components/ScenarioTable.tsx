@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import Card from './ui/Card';
 import { ChargingScenario } from "../types/charging";
 
 interface ScenarioTableProps {
@@ -8,37 +9,62 @@ interface ScenarioTableProps {
 
 function ScenarioTable({ scenarios, onPriceClick }: ScenarioTableProps) {
   return (
-    <div className="border border-gray-200 p-2 md:p-4 rounded h-[400px] md:h-[600px]">
-      <div className="mb-4 font-semibold text-gray-700 text-base md:text-lg">
-        <p>Table Mode - Compare Different Price Thresholds</p>
+    <Card variant="outlined" padding="lg" className="h-[400px] md:h-[600px]">
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+          💡 Compare Different Price Thresholds
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Click any row to select that price threshold
+        </p>
       </div>
       <div className="overflow-auto max-h-full">
-        <table className="min-w-full text-sm border-collapse">
+        <table className="min-w-full text-sm">
           <thead>
-            <tr className="border-b">
-              <th className="px-2 py-1 text-left">Price (c/kWh)</th>
-              <th className="px-2 py-1 text-left">Final SoC (%)</th>
-              <th className="px-2 py-1 text-left">Time Until Stop (hrs)</th>
-              <th className="px-2 py-1 text-left">Total Cost (€)</th>
+            <tr className="border-b-2 border-gray-200 dark:border-gray-700">
+              <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">
+                Price (c/kWh)
+              </th>
+              <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">
+                Final SoC (%)
+              </th>
+              <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">
+                Time Until Stop
+              </th>
+              <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">
+                Total Cost (€)
+              </th>
             </tr>
           </thead>
           <tbody>
             {scenarios.map((row, idx) => (
               <tr 
                 key={idx} 
-                className="border-b hover:bg-gray-50 cursor-pointer"
+                className="
+                  border-b border-gray-100 dark:border-gray-700 
+                  hover:bg-primary-50 dark:hover:bg-primary-900/20 
+                  cursor-pointer transition-colors duration-150
+                "
                 onClick={() => onPriceClick(row.price)}
               >
-                <td className="px-2 py-1">{row.price.toFixed(2)}</td>
-                <td className="px-2 py-1">{row.finalSoC.toFixed(2)}</td>
-                <td className="px-2 py-1">{row.hoursUntilStop}</td>
-                <td className="px-2 py-1">{row.totalCost.toFixed(2)}</td>
+                <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">
+                  {row.price.toFixed(2)}
+                </td>
+                <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                  {row.finalSoC.toFixed(2)}%
+                </td>
+                <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                  {row.hoursUntilStop}
+                </td>
+                <td className="px-4 py-3 font-medium text-secondary-600 dark:text-secondary-400">
+                  €{row.totalCost.toFixed(2)}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </div>
+    </Card>
   );
 }
 
