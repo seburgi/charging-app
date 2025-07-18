@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import ChartSection from "./ChartSection";
+import { useMarketData } from "./hooks/useMarketData";
 
 /**
  * Main application component. Holds state for user inputs, fetches market data,
@@ -7,58 +8,12 @@ import ChartSection from "./ChartSection";
  */
 export default function App() {
   // -- State for user inputs --
-  // Note: In TypeScript, you could add explicit types, e.g. useState<number>.
   const [currentCharge, setCurrentCharge] = useState(20);    // in %
   const [willingToPay, setWillingToPay] = useState(5);      // in Euro cents/kWh
   const [networkCosts, setNetworkCosts] = useState(0);      // in Euro cents/kWh
 
-  // We’ll calculate timestamps around "now"
-  const now = Date.now();
-
-  // Start: "now" minus 12 hours (in milliseconds)
-  const startTimestamp = now - 5 * 60 * 60 * 1000;
-  // End: "now" plus 36 hours
-  const endTimestamp = now + 36 * 60 * 60 * 1000;
-
-  // -- State for day-ahead market data (hourly) --
-  interface MarketItem {
-    start: number;
-    end: number;
-    marketPriceCents: number;
-  }
-  const [marketData, setMarketData] = useState<MarketItem[]>([]);
-
-  useEffect(() => {
-    // We'll fetch data from awattar (Austria) as an example
-    const fetchMarketData = async () => {
-      try {
-        const url = `https://api.awattar.at/v1/marketdata?start=${startTimestamp}&end=${endTimestamp}`;
-        const res = await fetch(url);
-        const json = await res.json();
-
-        // "data" is an array of objects: { start_timestamp, end_timestamp, marketprice (EUR/MWh), ... }
-        const rawData = json.data || [];
-
-        // Convert EUR/MWh --> Euro cents/kWh
-        //   1 MWh = 1000 kWh
-        //   Price in EUR/MWh => (price_in_EUR_MWh * 0.1) = Euro cents/kWh
-        const processedData: MarketItem[] = rawData.map((item: any) => {
-          const priceInCents = item.marketprice * 0.1; // from EUR/MWh to Euro cents/kWh
-          return {
-            start: item.start_timestamp,
-            end: item.end_timestamp,
-            marketPriceCents: parseFloat(priceInCents.toFixed(2)), // round to 2 decimals
-          };
-        });
-
-        setMarketData(processedData);
-      } catch (error) {
-        console.error("Error fetching market data:", error);
-      }
-    };
-
-    fetchMarketData();
-  }, [startTimestamp, endTimestamp]);
+  // -- Fetch market data using custom hook --
+  const { marketData, isLoading, error } = useMarketData();
 
   // This function determines whether we’ll charge in a given hour
   // based on total cost (market price + network costs) vs. willingToPay.
@@ -120,14 +75,32 @@ export default function App() {
       {/* Chart Area: grows to fill remaining space */}
       <div className="flex-1 p-4">
         <h2 className="text-lg font-semibold mb-4">Cost Overview & Charging Plan</h2>
-        <ChartSection
-          marketData={marketData}
-          networkCosts={networkCosts}
-          willingToPay={willingToPay}
-          currentCharge={currentCharge}
-          shouldCharge={shouldCharge}
-          onSetWillingToPay={(price) => setWillingToPay(price)}
-        />
+        
+        {/* Loading state */}
+        {isLoading && (
+          <div className="flex justify-center items-center h-64">
+            <div className="text-gray-500">Loading market data...</div>
+          </div>
+        )}
+
+        {/* Error state */}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <strong>Error:</strong> {error}
+          </div>
+        )}
+
+        {/* Chart section - only render when data is available */}
+        {!isLoading && !error && (
+          <ChartSection
+            marketData={marketData}
+            networkCosts={networkCosts}
+            willingToPay={willingToPay}
+            currentCharge={currentCharge}
+            shouldCharge={shouldCharge}
+            onSetWillingToPay={(price) => setWillingToPay(price)}
+          />
+        )}
       </div>
     </div>
   );
