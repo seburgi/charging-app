@@ -1,8 +1,8 @@
-import { memo, forwardRef } from 'react';
+import React, { memo, forwardRef } from 'react';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'outlined' | 'elevated';
-  padding?: 'none' | 'sm' | 'md' | 'lg';
+  padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
   children: React.ReactNode;
 }
 
@@ -26,6 +26,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       sm: 'p-3',
       md: 'p-4',
       lg: 'p-6',
+      xl: 'p-8',
     };
     
     const combinedClassName = `

@@ -4,6 +4,8 @@ import { useChargingCalculation } from "./hooks/useChargingCalculation";
 import ChartModeToggle, { ViewMode } from "./components/ChartModeToggle";
 import LazyPriceChart from "./components/LazyPriceChart";
 import ScenarioTable from "./components/ScenarioTable";
+import Stack from "./components/ui/Stack";
+import Divider from "./components/ui/Divider";
 
 /**
  * Props for ChartSection
@@ -42,26 +44,33 @@ export default function ChartSection({
 
 
   return (
-    <>
-      <ChartModeToggle 
-        viewMode={viewMode} 
-        onViewModeChange={setViewMode} 
-      />
-
-      {viewMode === "graph" && (
-        <LazyPriceChart 
-          chartData={chartData}
-          totalChargingCost={totalChargingCost}
-          totalChargedKwh={totalChargedKwh}
+    <Stack gap="lg">
+      {/* Chart Mode Toggle */}
+      <Stack gap="md">
+        <ChartModeToggle 
+          viewMode={viewMode} 
+          onViewModeChange={setViewMode} 
         />
-      )}
+        <Divider spacing="sm" color="light" />
+      </Stack>
 
-      {viewMode === "table" && (
-        <ScenarioTable 
-          scenarios={scenarios}
-          onPriceClick={onSetWillingToPay}
-        />
-      )}
-    </>
+      {/* Content Area */}
+      <Stack gap="lg">
+        {viewMode === "graph" && (
+          <LazyPriceChart 
+            chartData={chartData}
+            totalChargingCost={totalChargingCost}
+            totalChargedKwh={totalChargedKwh}
+          />
+        )}
+
+        {viewMode === "table" && (
+          <ScenarioTable 
+            scenarios={scenarios}
+            onPriceClick={onSetWillingToPay}
+          />
+        )}
+      </Stack>
+    </Stack>
   );
 }

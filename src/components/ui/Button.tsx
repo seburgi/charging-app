@@ -1,4 +1,4 @@
-import { memo, forwardRef } from 'react';
+import React, { memo, forwardRef } from 'react';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';

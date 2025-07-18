@@ -9,8 +9,8 @@ interface ScenarioTableProps {
 
 function ScenarioTable({ scenarios, onPriceClick }: ScenarioTableProps) {
   return (
-    <Card variant="outlined" padding="lg" className="h-[400px] md:h-[600px]">
-      <div className="mb-6">
+    <Card variant="outlined" padding="lg" className="flex flex-col h-[400px] md:h-[600px]">
+      <div className="mb-6 flex-shrink-0">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
           💡 Compare Different Price Thresholds
         </h3>
@@ -18,9 +18,9 @@ function ScenarioTable({ scenarios, onPriceClick }: ScenarioTableProps) {
           Click any row to select that price threshold
         </p>
       </div>
-      <div className="overflow-auto max-h-full">
+      <div className="flex-1 overflow-auto border border-gray-200 dark:border-gray-700 rounded-lg">
         <table className="min-w-full text-sm">
-          <thead>
+          <thead className="sticky top-0 bg-white dark:bg-gray-800 z-10">
             <tr className="border-b-2 border-gray-200 dark:border-gray-700">
               <th className="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">
                 Price (c/kWh)
