@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 export type ViewMode = "graph" | "table";
 
 interface ChartModeToggleProps {
@@ -5,7 +7,7 @@ interface ChartModeToggleProps {
   onViewModeChange: (mode: ViewMode) => void;
 }
 
-export default function ChartModeToggle({ viewMode, onViewModeChange }: ChartModeToggleProps) {
+function ChartModeToggle({ viewMode, onViewModeChange }: ChartModeToggleProps) {
   return (
     <div className="mb-4">
       <button
@@ -27,3 +29,5 @@ export default function ChartModeToggle({ viewMode, onViewModeChange }: ChartMod
     </div>
   );
 }
+
+export default memo(ChartModeToggle);

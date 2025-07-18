@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import {
   ComposedChart,
   Bar,
@@ -36,7 +37,7 @@ const CustomBar = (props: any) => {
   );
 };
 
-export default function PriceChart({ chartData, totalChargingCost, totalChargedKwh }: PriceChartProps) {
+function PriceChart({ chartData, totalChargingCost, totalChargedKwh }: PriceChartProps) {
   return (
     <div className="border border-gray-200 p-2 md:p-4 rounded h-[400px] md:h-[600px]">
       <ChargingMetrics 
@@ -115,3 +116,5 @@ export default function PriceChart({ chartData, totalChargingCost, totalChargedK
     </div>
   );
 }
+
+export default memo(PriceChart);

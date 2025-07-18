@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import ChartSection from "./ChartSection";
 import { useMarketData } from "./hooks/useMarketData";
+import { useDebounce } from "./hooks/useDebounce";
 
 /**
  * Main application component. Holds state for user inputs, fetches market data,
@@ -12,15 +13,23 @@ export default function App() {
   const [willingToPay, setWillingToPay] = useState(5);      // in Euro cents/kWh
   const [networkCosts, setNetworkCosts] = useState(0);      // in Euro cents/kWh
 
+  // -- Debounce user inputs to prevent excessive recalculations --
+  const debouncedCurrentCharge = useDebounce(currentCharge, 300);
+  const debouncedWillingToPay = useDebounce(willingToPay, 300);
+  const debouncedNetworkCosts = useDebounce(networkCosts, 300);
+
   // -- Fetch market data using custom hook --
   const { marketData, isLoading, error } = useMarketData();
 
-  // This function determines whether we’ll charge in a given hour
+  // This function determines whether we'll charge in a given hour
   // based on total cost (market price + network costs) vs. willingToPay.
-  const shouldCharge = (marketPriceCents: number) => {
-    const totalCost = marketPriceCents + Number(networkCosts);
-    return totalCost <= Number(willingToPay);
-  };
+  // Memoize this function to prevent unnecessary re-renders
+  const shouldCharge = useMemo(() => {
+    return (marketPriceCents: number) => {
+      const totalCost = marketPriceCents + Number(debouncedNetworkCosts);
+      return totalCost <= Number(debouncedWillingToPay);
+    };
+  }, [debouncedNetworkCosts, debouncedWillingToPay]);
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
@@ -76,17 +85,30 @@ export default function App() {
       <div className="flex-1 p-4">
         <h2 className="text-lg font-semibold mb-4">Cost Overview & Charging Plan</h2>
         
-        {/* Loading state */}
+        {/* Loading state with spinner */}
         {isLoading && (
           <div className="flex justify-center items-center h-64">
-            <div className="text-gray-500">Loading market data...</div>
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+              <p className="text-gray-500">Loading market data...</p>
+            </div>
           </div>
         )}
 
-        {/* Error state */}
+        {/* Error state with retry button */}
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            <strong>Error:</strong> {error}
+            <div className="flex items-center justify-between">
+              <div>
+                <strong>Error:</strong> {error}
+              </div>
+              <button
+                onClick={() => window.location.reload()}
+                className="ml-4 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+              >
+                Retry
+              </button>
+            </div>
           </div>
         )}
 
@@ -94,9 +116,9 @@ export default function App() {
         {!isLoading && !error && (
           <ChartSection
             marketData={marketData}
-            networkCosts={networkCosts}
-            willingToPay={willingToPay}
-            currentCharge={currentCharge}
+            networkCosts={debouncedNetworkCosts}
+            willingToPay={debouncedWillingToPay}
+            currentCharge={debouncedCurrentCharge}
             shouldCharge={shouldCharge}
             onSetWillingToPay={(price) => setWillingToPay(price)}
           />

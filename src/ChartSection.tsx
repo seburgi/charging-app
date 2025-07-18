@@ -2,7 +2,7 @@ import { useState } from "react";
 import { MarketItem } from "./types/market";
 import { useChargingCalculation } from "./hooks/useChargingCalculation";
 import ChartModeToggle, { ViewMode } from "./components/ChartModeToggle";
-import PriceChart from "./components/PriceChart";
+import LazyPriceChart from "./components/LazyPriceChart";
 import ScenarioTable from "./components/ScenarioTable";
 
 /**
@@ -49,7 +49,7 @@ export default function ChartSection({
       />
 
       {viewMode === "graph" && (
-        <PriceChart 
+        <LazyPriceChart 
           chartData={chartData}
           totalChargingCost={totalChargingCost}
           totalChargedKwh={totalChargedKwh}

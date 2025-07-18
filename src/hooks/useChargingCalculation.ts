@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { MarketItem } from '../types/market';
 import { 
   ChargingCalculationParams, 
@@ -175,42 +175,48 @@ export function useChargingCalculation(
   networkCosts: number,
   shouldCharge: (marketPriceCents: number) => boolean
 ): UseChargingCalculationReturn {
-  const [chartData, setChartData] = useState<ChartDataItem[]>([]);
-  const [totalChargingCost, setTotalChargingCost] = useState(0);
-  const [totalChargedKwh, setTotalChargedKwh] = useState(0);
   const [scenarios, setScenarios] = useState<ChargingScenario[]>([]);
 
-  useEffect(() => {
-    if (marketData.length === 0) return;
+  // Memoize the main charging calculation
+  const chargingResult = useMemo(() => {
+    if (marketData.length === 0) {
+      return {
+        chartData: [],
+        totalChargingCost: 0,
+        totalChargedKwh: 0,
+      };
+    }
 
-    // Calculate main charging data
-    const result = calculateChargingData({
+    return calculateChargingData({
       marketData,
       currentCharge,
       networkCosts,
       shouldCharge,
     });
-
-    setChartData(result.chartData);
-    setTotalChargingCost(result.totalChargingCost);
-    setTotalChargedKwh(result.totalChargedKwh);
-
-    // Calculate scenarios for table mode
-    const uniquePrices = Array.from(
-      new Set(result.chartData.map((d) => d.totalCostCents))
-    ).sort((a, b) => a - b);
-
-    const calculatedScenarios = uniquePrices.map((price) => 
-      computeChargeScenario(price, result.chartData, currentCharge, Date.now())
-    );
-
-    setScenarios(calculatedScenarios);
   }, [marketData, currentCharge, networkCosts, shouldCharge]);
 
+  // Memoize scenario calculations
+  const memoizedScenarios = useMemo(() => {
+    if (chargingResult.chartData.length === 0) return [];
+
+    const uniquePrices = Array.from(
+      new Set(chargingResult.chartData.map((d) => d.totalCostCents))
+    ).sort((a, b) => a - b);
+
+    return uniquePrices.map((price) => 
+      computeChargeScenario(price, chargingResult.chartData, currentCharge, Date.now())
+    );
+  }, [chargingResult.chartData, currentCharge]);
+
+  // Update scenarios when memoized scenarios change
+  useEffect(() => {
+    setScenarios(memoizedScenarios);
+  }, [memoizedScenarios]);
+
   return {
-    chartData,
-    totalChargingCost,
-    totalChargedKwh,
+    chartData: chargingResult.chartData,
+    totalChargingCost: chargingResult.totalChargingCost,
+    totalChargedKwh: chargingResult.totalChargedKwh,
     scenarios,
   };
 }

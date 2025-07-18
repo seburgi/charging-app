@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { ChargingScenario } from "../types/charging";
 
 interface ScenarioTableProps {
@@ -5,7 +6,7 @@ interface ScenarioTableProps {
   onPriceClick: (price: number) => void;
 }
 
-export default function ScenarioTable({ scenarios, onPriceClick }: ScenarioTableProps) {
+function ScenarioTable({ scenarios, onPriceClick }: ScenarioTableProps) {
   return (
     <div className="border border-gray-200 p-2 md:p-4 rounded h-[400px] md:h-[600px]">
       <div className="mb-4 font-semibold text-gray-700 text-base md:text-lg">
@@ -40,3 +41,5 @@ export default function ScenarioTable({ scenarios, onPriceClick }: ScenarioTable
     </div>
   );
 }
+
+export default memo(ScenarioTable);
