@@ -22,9 +22,20 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider = ({ children }: ThemeProviderProps) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  // Initialize with proper default state
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // Check if we're in browser environment
+    if (typeof window === 'undefined') return false;
+    
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') return true;
+    if (savedTheme === 'light') return false;
+    
+    // Default to system preference
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
 
-  // Load theme preference from localStorage
+  // Load theme preference from localStorage (backup for SSR)
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
@@ -39,10 +50,10 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
   // Apply theme to document
   useEffect(() => {
+    // Force remove and add to ensure clean state
+    document.documentElement.classList.remove('dark');
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
     }
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
