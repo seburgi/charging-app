@@ -45,7 +45,7 @@ export default function App() {
       <div className="flex flex-col lg:flex-row min-h-screen">
         {/* Sidebar: full width on mobile, fixed width on lg+ */}
         <aside className="w-full lg:w-80 xl:w-96 bg-white dark:bg-gray-800 shadow-xl lg:border-r dark:border-gray-700 lg:shadow-none border-b lg:border-b-0">
-          <Container padding="md">
+          <Container padding="sm">
             <Stack gap="md lg:gap-lg">
               {/* Header */}
               <Stack direction="horizontal" justify="between" align="center">
@@ -106,13 +106,13 @@ export default function App() {
 
         {/* Main Content Area */}
         <main className="flex-1 overflow-hidden">
-          <Container maxWidth="7xl" padding="md" className="h-full">
+          <Container maxWidth="7xl" padding="sm" className="h-full">
             <Section 
               title="Cost Overview & Charging Plan" 
               subtitle="Optimize your EV charging schedule based on real-time market data"
               spacing="none"
               headerSpacing="lg"
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 lg:p-6"
             >
               <Stack gap="lg">
                 {/* Loading state with spinner */}

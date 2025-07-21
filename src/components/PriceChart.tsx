@@ -46,22 +46,24 @@ function PriceChart({ chartData, totalChargingCost, totalChargedKwh }: PriceChar
         totalChargedKwh={totalChargedKwh}
       />
 
-      <Card variant="outlined" padding="md" className="h-[400px] md:h-[600px]">
+      <Card variant="outlined" padding="none" className="h-[400px] md:h-[600px] p-2 md:p-4">
         <ResponsiveContainer width="100%" height="100%">
         <ComposedChart
           data={chartData}
-          margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
+          margin={{ top: 10, right: 15, left: 0, bottom: 10 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="hour" />
+          <XAxis dataKey="hour" tick={{ fontSize: 12 }} />
 
           {/* Y-axis for cost in c/kWh */}
           <YAxis
             yAxisId="left"
+            tick={{ fontSize: 12 }}
             label={{
               value: "Cost (c/kWh)",
               angle: -90,
               position: "insideLeft",
+              style: { textAnchor: 'middle', fontSize: '12px' }
             }}
           />
 
@@ -70,10 +72,12 @@ function PriceChart({ chartData, totalChargingCost, totalChargedKwh }: PriceChar
             yAxisId="right"
             orientation="right"
             domain={[0, 100]}
+            tick={{ fontSize: 12 }}
             label={{
               value: "Battery SoC (%)",
               angle: -90,
               position: "insideRight",
+              style: { textAnchor: 'middle', fontSize: '12px' }
             }}
           />
 
@@ -99,6 +103,8 @@ function PriceChart({ chartData, totalChargingCost, totalChargedKwh }: PriceChar
               dataKey="totalCostCents"
               position="top"
               formatter={(val: number) => `${val.toFixed(2)}`}
+              className="hidden md:block"
+              style={{ fontSize: '10px' }}
             />
           </Bar>
 

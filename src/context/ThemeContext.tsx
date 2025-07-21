@@ -39,7 +39,11 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
   // Apply theme to document
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode);
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 

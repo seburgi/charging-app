@@ -44,33 +44,28 @@ export default function ChartSection({
 
 
   return (
-    <Stack gap="lg">
+    <Stack gap="sm">
       {/* Chart Mode Toggle */}
-      <Stack gap="md">
-        <ChartModeToggle 
-          viewMode={viewMode} 
-          onViewModeChange={setViewMode} 
-        />
-        <Divider spacing="sm" color="light" />
-      </Stack>
+      <ChartModeToggle 
+        viewMode={viewMode} 
+        onViewModeChange={setViewMode} 
+      />
 
       {/* Content Area */}
-      <Stack gap="lg">
-        {viewMode === "graph" && (
-          <LazyPriceChart 
-            chartData={chartData}
-            totalChargingCost={totalChargingCost}
-            totalChargedKwh={totalChargedKwh}
-          />
-        )}
+      {viewMode === "graph" && (
+        <LazyPriceChart 
+          chartData={chartData}
+          totalChargingCost={totalChargingCost}
+          totalChargedKwh={totalChargedKwh}
+        />
+      )}
 
-        {viewMode === "table" && (
-          <ScenarioTable 
-            scenarios={scenarios}
-            onPriceClick={onSetWillingToPay}
-          />
-        )}
-      </Stack>
+      {viewMode === "table" && (
+        <ScenarioTable 
+          scenarios={scenarios}
+          onPriceClick={onSetWillingToPay}
+        />
+      )}
     </Stack>
   );
 }
