@@ -5,7 +5,7 @@ import ChartModeToggle, { ViewMode } from "./components/ChartModeToggle";
 import LazyPriceChart from "./components/LazyPriceChart";
 import ScenarioTable from "./components/ScenarioTable";
 import Stack from "./components/ui/Stack";
-import Divider from "./components/ui/Divider";
+import { useSwipeGesture } from "./hooks/useSwipeGesture";
 
 /**
  * Props for ChartSection
@@ -42,30 +42,56 @@ export default function ChartSection({
     shouldCharge
   );
 
+  // Swipe gesture handlers
+  const handleSwipeLeft = () => {
+    if (viewMode === "table") {
+      setViewMode("graph");
+    }
+  };
+
+  const handleSwipeRight = () => {
+    if (viewMode === "graph") {
+      setViewMode("table");
+    }
+  };
+
+  // Setup swipe gestures
+  const swipeRef = useSwipeGesture({
+    onSwipeLeft: handleSwipeLeft,
+    onSwipeRight: handleSwipeRight,
+    minSwipeDistance: 80,
+  });
 
   return (
     <Stack gap="sm">
       {/* Chart Mode Toggle */}
-      <ChartModeToggle 
-        viewMode={viewMode} 
-        onViewModeChange={setViewMode} 
-      />
-
-      {/* Content Area */}
-      {viewMode === "graph" && (
-        <LazyPriceChart 
-          chartData={chartData}
-          totalChargingCost={totalChargingCost}
-          totalChargedKwh={totalChargedKwh}
+      <div className="flex items-center justify-between">
+        <ChartModeToggle 
+          viewMode={viewMode} 
+          onViewModeChange={setViewMode} 
         />
-      )}
+        <div className="text-xs text-gray-400 dark:text-gray-500 hidden sm:block">
+          Swipe left/right to switch views
+        </div>
+      </div>
 
-      {viewMode === "table" && (
-        <ScenarioTable 
-          scenarios={scenarios}
-          onPriceClick={onSetWillingToPay}
-        />
-      )}
+      {/* Content Area with Swipe Support */}
+      <div ref={swipeRef} className="touch-pan-y">
+        {viewMode === "graph" && (
+          <LazyPriceChart 
+            chartData={chartData}
+            totalChargingCost={totalChargingCost}
+            totalChargedKwh={totalChargedKwh}
+          />
+        )}
+
+        {viewMode === "table" && (
+          <ScenarioTable 
+            scenarios={scenarios}
+            onPriceClick={onSetWillingToPay}
+          />
+        )}
+      </div>
     </Stack>
   );
 }

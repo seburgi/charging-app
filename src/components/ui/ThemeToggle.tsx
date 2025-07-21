@@ -4,14 +4,24 @@ import { useTheme } from '../../context/ThemeContext';
 const ThemeToggle = memo(() => {
   const { isDarkMode, toggleTheme } = useTheme();
   
+  const handleToggle = () => {
+    // Haptic feedback on theme toggle
+    if ('vibrate' in navigator) {
+      navigator.vibrate(50);
+    }
+    toggleTheme();
+  };
+  
   return (
     <button
-        onClick={toggleTheme}
+        onClick={handleToggle}
         className="
-          p-2 rounded-lg transition-colors duration-200
+          p-3 md:p-2 rounded-lg transition-colors duration-200
           hover:bg-gray-100 dark:hover:bg-gray-700
           focus:outline-none focus:ring-2 focus:ring-blue-500
           text-gray-700 dark:text-gray-200
+          min-h-[44px] min-w-[44px] touch-manipulation
+          flex items-center justify-center
         "
         aria-label="Toggle theme"
       >

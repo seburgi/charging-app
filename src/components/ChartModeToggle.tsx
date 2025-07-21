@@ -9,22 +9,30 @@ interface ChartModeToggleProps {
 }
 
 function ChartModeToggle({ viewMode, onViewModeChange }: ChartModeToggleProps) {
+  const handleModeChange = (mode: ViewMode) => {
+    // Haptic feedback on mode change
+    if ('vibrate' in navigator) {
+      navigator.vibrate(40);
+    }
+    onViewModeChange(mode);
+  };
+
   return (
     <div className="mb-2 md:mb-3">
       <div className="flex gap-2">
         <Button
           variant={viewMode === 'table' ? 'primary' : 'outline'}
           size="sm"
-          onClick={() => onViewModeChange('table')}
-          className="text-xs md:text-sm px-2 md:px-3"
+          onClick={() => handleModeChange('table')}
+          className="text-xs md:text-sm px-3 py-3 md:px-4 md:py-2 min-h-[44px] touch-manipulation"
         >
           📊 <span className="hidden sm:inline">Table Mode</span><span className="sm:hidden">Table</span>
         </Button>
         <Button
           variant={viewMode === 'graph' ? 'primary' : 'outline'}
           size="sm"
-          onClick={() => onViewModeChange('graph')}
-          className="text-xs md:text-sm px-2 md:px-3"
+          onClick={() => handleModeChange('graph')}
+          className="text-xs md:text-sm px-3 py-3 md:px-4 md:py-2 min-h-[44px] touch-manipulation"
         >
           📈 <span className="hidden sm:inline">Graph Mode</span><span className="sm:hidden">Graph</span>
         </Button>

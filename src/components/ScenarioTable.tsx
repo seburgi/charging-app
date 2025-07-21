@@ -43,20 +43,28 @@ function ScenarioTable({ scenarios, onPriceClick }: ScenarioTableProps) {
                 className="
                   border-b border-gray-100 dark:border-gray-700 
                   hover:bg-primary-50 dark:hover:bg-primary-900/20 
+                  active:bg-primary-100 dark:active:bg-primary-900/40
                   cursor-pointer transition-colors duration-150
+                  touch-manipulation select-none
                 "
-                onClick={() => onPriceClick(row.price)}
+                onClick={() => {
+                  // Haptic feedback on row selection
+                  if ('vibrate' in navigator) {
+                    navigator.vibrate(30);
+                  }
+                  onPriceClick(row.price);
+                }}
               >
-                <td className="px-2 md:px-4 py-2 md:py-3 font-medium text-gray-900 dark:text-white text-xs md:text-sm">
+                <td className="px-2 md:px-4 py-3 md:py-3 font-medium text-gray-900 dark:text-white text-xs md:text-sm">
                   {row.price.toFixed(2)}
                 </td>
-                <td className="px-2 md:px-4 py-2 md:py-3 text-gray-700 dark:text-gray-300 text-xs md:text-sm">
+                <td className="px-2 md:px-4 py-3 md:py-3 text-gray-700 dark:text-gray-300 text-xs md:text-sm">
                   {row.finalSoC.toFixed(2)}%
                 </td>
-                <td className="px-2 md:px-4 py-2 md:py-3 text-gray-700 dark:text-gray-300 text-xs md:text-sm">
+                <td className="px-2 md:px-4 py-3 md:py-3 text-gray-700 dark:text-gray-300 text-xs md:text-sm">
                   {row.hoursUntilStop}
                 </td>
-                <td className="px-2 md:px-4 py-2 md:py-3 font-medium text-secondary-600 dark:text-white text-xs md:text-sm">
+                <td className="px-2 md:px-4 py-3 md:py-3 font-medium text-secondary-600 dark:text-white text-xs md:text-sm">
                   €{row.totalCost.toFixed(2)}
                 </td>
               </tr>

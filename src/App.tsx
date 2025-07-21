@@ -4,6 +4,7 @@ import { useMarketData } from "./hooks/useMarketData";
 import { useDebounce } from "./hooks/useDebounce";
 import Card from "./components/ui/Card";
 import Input from "./components/ui/Input";
+import TouchSlider from "./components/ui/TouchSlider";
 import Button from "./components/ui/Button";
 import Logo from "./components/ui/Logo";
 import ThemeToggle from "./components/ui/ThemeToggle";
@@ -19,7 +20,7 @@ import Divider from "./components/ui/Divider";
 export default function App() {
   // -- State for user inputs --
   const [currentCharge, setCurrentCharge] = useState(20);    // in %
-  const [willingToPay, setWillingToPay] = useState(5);      // in Euro cents/kWh
+  const [willingToPay, setWillingToPay] = useState(15);     // in Euro cents/kWh (can be negative)
   const [networkCosts, setNetworkCosts] = useState(0);      // in Euro cents/kWh
 
   // -- Debounce user inputs to prevent excessive recalculations --
@@ -65,39 +66,85 @@ export default function App() {
               >
         
                 <Stack gap="lg">
-                  <Input
-                    id="currentCharge"
-                    type="number"
-                    label="Current Charge Level (%)"
-                    placeholder="e.g., 30"
-                    value={currentCharge}
-                    onChange={(e) => setCurrentCharge(Number(e.target.value))}
-                    min="0"
-                    max="100"
-                    helperText="Enter your current battery charge percentage"
-                  />
+                  {/* Mobile-friendly touch sliders */}
+                  <div className="block md:hidden">
+                    <TouchSlider
+                      id="currentCharge"
+                      label="Current Charge Level"
+                      value={currentCharge}
+                      min={0}
+                      max={100}
+                      step={1}
+                      unit="%"
+                      onChange={setCurrentCharge}
+                      helperText="Drag to adjust your current battery charge"
+                    />
 
-                  <Input
-                    id="willingToPay"
-                    type="number"
-                    label="Willing to Pay (c/kWh)"
-                    placeholder="e.g., 30"
-                    value={willingToPay}
-                    onChange={(e) => setWillingToPay(Number(e.target.value))}
-                    min="0"
-                    helperText="Maximum price you're willing to pay for charging"
-                  />
+                    <TouchSlider
+                      id="willingToPay"
+                      label="Willing to Pay"
+                      value={willingToPay}
+                      min={-10}
+                      max={50}
+                      step={0.5}
+                      unit=" c/kWh"
+                      onChange={setWillingToPay}
+                      helperText="Drag to set price threshold - negative means you get paid to charge!"
+                      className="mt-6"
+                    />
 
-                  <Input
-                    id="networkCosts"
-                    type="number"
-                    label="Network Costs (c/kWh)"
-                    placeholder="e.g., 10"
-                    value={networkCosts}
-                    onChange={(e) => setNetworkCosts(Number(e.target.value))}
-                    min="0"
-                    helperText="Additional network/grid costs per kWh"
-                  />
+                    <TouchSlider
+                      id="networkCosts"
+                      label="Network Costs"
+                      value={networkCosts}
+                      min={0}
+                      max={20}
+                      step={0.1}
+                      unit=" c/kWh"
+                      onChange={setNetworkCosts}
+                      helperText="Drag to adjust network/grid costs"
+                      className="mt-6"
+                    />
+                  </div>
+
+                  {/* Desktop input fields */}
+                  <div className="hidden md:block space-y-6">
+                    <Input
+                      id="currentCharge"
+                      type="number"
+                      label="Current Charge Level (%)"
+                      placeholder="e.g., 30"
+                      value={currentCharge}
+                      onChange={(e) => setCurrentCharge(Number(e.target.value))}
+                      min="0"
+                      max="100"
+                      helperText="Enter your current battery charge percentage"
+                    />
+
+                    <Input
+                      id="willingToPay"
+                      type="number"
+                      label="Willing to Pay (c/kWh)"
+                      placeholder="e.g., 30 or -5"
+                      value={willingToPay}
+                      onChange={(e) => setWillingToPay(Number(e.target.value))}
+                      min="-10"
+                      max="50"
+                      step="0.5"
+                      helperText="Price threshold for charging - negative means you get paid to use electricity!"
+                    />
+
+                    <Input
+                      id="networkCosts"
+                      type="number"
+                      label="Network Costs (c/kWh)"
+                      placeholder="e.g., 10"
+                      value={networkCosts}
+                      onChange={(e) => setNetworkCosts(Number(e.target.value))}
+                      min="0"
+                      helperText="Additional network/grid costs per kWh"
+                    />
+                  </div>
                 </Stack>
               </Section>
             </Stack>
