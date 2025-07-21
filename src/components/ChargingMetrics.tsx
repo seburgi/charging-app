@@ -14,7 +14,7 @@ function ChargingMetrics({ totalChargingCost, totalChargedKwh }: ChargingMetrics
           <div className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
             Total Charging Cost
           </div>
-          <div className="text-lg md:text-2xl font-bold text-primary-600 dark:text-primary-400">
+          <div className="text-lg md:text-2xl font-bold text-primary-600 dark:text-white">
             €{(totalChargingCost / 100).toFixed(2)}
           </div>
         </div>
@@ -22,7 +22,7 @@ function ChargingMetrics({ totalChargingCost, totalChargedKwh }: ChargingMetrics
           <div className="text-xs md:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
             Total kWh Charged
           </div>
-          <div className="text-lg md:text-2xl font-bold text-secondary-600 dark:text-secondary-400">
+          <div className="text-lg md:text-2xl font-bold text-secondary-600 dark:text-white">
             {totalChargedKwh.toFixed(2)} kWh
           </div>
         </div>

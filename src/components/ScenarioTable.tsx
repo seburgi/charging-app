@@ -56,7 +56,7 @@ function ScenarioTable({ scenarios, onPriceClick }: ScenarioTableProps) {
                 <td className="px-2 md:px-4 py-2 md:py-3 text-gray-700 dark:text-gray-300 text-xs md:text-sm">
                   {row.hoursUntilStop}
                 </td>
-                <td className="px-2 md:px-4 py-2 md:py-3 font-medium text-secondary-600 dark:text-secondary-300 text-xs md:text-sm">
+                <td className="px-2 md:px-4 py-2 md:py-3 font-medium text-secondary-600 dark:text-white text-xs md:text-sm">
                   €{row.totalCost.toFixed(2)}
                 </td>
               </tr>
